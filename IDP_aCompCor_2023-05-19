@@ -1,0 +1,44 @@
+#!/bin/tcsh
+
+# Usage
+#=====================================================
+set usage="$0 <Subject_ID>"
+
+if ($# < 1) then
+echo "usage:" $usage
+exit
+endif
+
+
+# Define Subject Variable
+#=====================================================
+set Subject_ID=$1
+
+
+#Test for subject
+#=====================================================
+if (-e $Subject_ID) then
+   echo "Subject Found"
+   else
+   echo "Subject Not Found"
+   exit
+endif
+
+
+#Determine Directory Name
+#=====================================================
+cd $Subject_ID
+set derivative_dir=`pwd`
+
+if($derivative_dir:h:t != "derivative") then
+   echo "Current directory is not derivative, exiting"
+   exit
+endif
+
+
+#Process compcor
+#=====================================================
+foreach file ($derivative_dir:r/func/*BOLD*.nii.gz)
+   echo $file
+   /usr/local/bin/cchmc_MRI_scripts/ProcessingScripts_TCM/RS_process_FSLorder.sh $file $derivative_dir:r/anat/o*avg*.nii.gz $file:r:r_aCC
+end
